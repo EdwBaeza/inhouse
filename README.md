@@ -3,11 +3,17 @@
 #### Build
 
 ```console
-docker build -t my-golang-app .
+docker-compose -f local.yml build
 ```
 
-### Run
+#### Run Server
 
 ```console
-docker run -it --rm --name my-running-app my-golang-app
+docker-compose -f local.yml up
+```
+
+#### Run Tests
+
+```console
+docker-compose -f local.yml run --rm app go test --cover -v ./...
 ```
