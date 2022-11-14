@@ -5,20 +5,21 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/EdwBaeza/inhouse/internal/platform/server/handler/health"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/assert/v2"
 	"github.com/stretchr/testify/require"
 )
 
-func TestHelthCheckHandler(t *testing.T) {
+const ENDPOINT = "/health"
+
+func TestCheckHandler(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	r := gin.New()
-	r.GET("/health", health.CheckHandler())
+	r.GET(ENDPOINT, CheckHandler())
 
-	t.Run("returns 200", func(t *testing.T) {
+	t.Run("Returns 200", func(t *testing.T) {
 
-		req, err := http.NewRequest(http.MethodGet, "/health", nil)
+		req, err := http.NewRequest(http.MethodGet, ENDPOINT, nil)
 		require.NoError(t, err)
 
 		rec := httptest.NewRecorder()

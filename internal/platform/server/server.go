@@ -32,3 +32,7 @@ func (s *Server) Run() error {
 func (s *Server) registerRoutes() {
 	s.engine.GET("/health", health.CheckHandler())
 }
+
+func (s *Server) Engine() *gin.Engine {
+	return s.engine
+}
