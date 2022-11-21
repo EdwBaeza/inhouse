@@ -5,6 +5,8 @@ import (
 	"log"
 
 	"github.com/EdwBaeza/inhouse/internal/platform/server/handler/health"
+	home "github.com/EdwBaeza/inhouse/internal/platform/server/handler/home"
+	postgres "github.com/EdwBaeza/inhouse/internal/platform/services/postgres"
 	"github.com/gin-gonic/gin"
 )
 
@@ -31,6 +33,7 @@ func (s *Server) Run() error {
 
 func (s *Server) registerRoutes() {
 	s.engine.GET("/health", health.CheckHandler())
+	s.engine.GET("/homes", home.ShowHandler(postgres.NewHomeRepository()))
 }
 
 func (s *Server) Engine() *gin.Engine {
