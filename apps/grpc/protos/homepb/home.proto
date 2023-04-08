@@ -1,0 +1,24 @@
+ syntax = "proto3";
+
+ package homepb;
+
+ option go_package = "github.com/edwbaeza/inhouse;homepb";
+
+ message Home {
+    string id = 1;
+    string name = 2;
+    string rawAddress = 3;
+ }
+
+ message GetHomeRequest {
+   string id = 1;
+ }
+
+message HomeResponse {
+   string id = 1;
+}
+
+service HomeService {
+   rpc GetHome (GetHomeRequest) returns (Home) {}
+   rpc SaveHome (Home) returns (HomeResponse) {}
+}
