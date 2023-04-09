@@ -9,4 +9,5 @@ type Home struct {
 type HomeRepository interface {
 	FindHomeById(id string) (*Home, error)
 	CreateHome(home *Home) error
+	ListHomes() ([]Home, error)
 }

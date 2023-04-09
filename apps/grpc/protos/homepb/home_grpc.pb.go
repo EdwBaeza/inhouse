@@ -11,6 +11,7 @@ import (
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -19,8 +20,9 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	HomeService_GetHome_FullMethodName  = "/homepb.HomeService/GetHome"
-	HomeService_SaveHome_FullMethodName = "/homepb.HomeService/SaveHome"
+	HomeService_GetHome_FullMethodName   = "/homepb.HomeService/GetHome"
+	HomeService_SaveHome_FullMethodName  = "/homepb.HomeService/SaveHome"
+	HomeService_ListHomes_FullMethodName = "/homepb.HomeService/ListHomes"
 )
 
 // HomeServiceClient is the client API for HomeService service.
@@ -29,6 +31,7 @@ const (
 type HomeServiceClient interface {
 	GetHome(ctx context.Context, in *GetHomeRequest, opts ...grpc.CallOption) (*Home, error)
 	SaveHome(ctx context.Context, in *Home, opts ...grpc.CallOption) (*HomeResponse, error)
+	ListHomes(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (HomeService_ListHomesClient, error)
 }
 
 type homeServiceClient struct {
@@ -57,12 +60,45 @@ func (c *homeServiceClient) SaveHome(ctx context.Context, in *Home, opts ...grpc
 	return out, nil
 }
 
+func (c *homeServiceClient) ListHomes(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (HomeService_ListHomesClient, error) {
+	stream, err := c.cc.NewStream(ctx, &HomeService_ServiceDesc.Streams[0], HomeService_ListHomes_FullMethodName, opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &homeServiceListHomesClient{stream}
+	if err := x.ClientStream.SendMsg(in); err != nil {
+		return nil, err
+	}
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	return x, nil
+}
+
+type HomeService_ListHomesClient interface {
+	Recv() (*Home, error)
+	grpc.ClientStream
+}
+
+type homeServiceListHomesClient struct {
+	grpc.ClientStream
+}
+
+func (x *homeServiceListHomesClient) Recv() (*Home, error) {
+	m := new(Home)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
 // HomeServiceServer is the server API for HomeService service.
 // All implementations must embed UnimplementedHomeServiceServer
 // for forward compatibility
 type HomeServiceServer interface {
 	GetHome(context.Context, *GetHomeRequest) (*Home, error)
 	SaveHome(context.Context, *Home) (*HomeResponse, error)
+	ListHomes(*emptypb.Empty, HomeService_ListHomesServer) error
 	mustEmbedUnimplementedHomeServiceServer()
 }
 
@@ -75,6 +111,9 @@ func (UnimplementedHomeServiceServer) GetHome(context.Context, *GetHomeRequest) 
 }
 func (UnimplementedHomeServiceServer) SaveHome(context.Context, *Home) (*HomeResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SaveHome not implemented")
+}
+func (UnimplementedHomeServiceServer) ListHomes(*emptypb.Empty, HomeService_ListHomesServer) error {
+	return status.Errorf(codes.Unimplemented, "method ListHomes not implemented")
 }
 func (UnimplementedHomeServiceServer) mustEmbedUnimplementedHomeServiceServer() {}
 
@@ -125,6 +164,27 @@ func _HomeService_SaveHome_Handler(srv interface{}, ctx context.Context, dec fun
 	return interceptor(ctx, in, info, handler)
 }
 
+func _HomeService_ListHomes_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(emptypb.Empty)
+	if err := stream.RecvMsg(m); err != nil {
+		return err
+	}
+	return srv.(HomeServiceServer).ListHomes(m, &homeServiceListHomesServer{stream})
+}
+
+type HomeService_ListHomesServer interface {
+	Send(*Home) error
+	grpc.ServerStream
+}
+
+type homeServiceListHomesServer struct {
+	grpc.ServerStream
+}
+
+func (x *homeServiceListHomesServer) Send(m *Home) error {
+	return x.ServerStream.SendMsg(m)
+}
+
 // HomeService_ServiceDesc is the grpc.ServiceDesc for HomeService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -141,6 +201,12 @@ var HomeService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _HomeService_SaveHome_Handler,
 		},
 	},
-	Streams:  []grpc.StreamDesc{},
+	Streams: []grpc.StreamDesc{
+		{
+			StreamName:    "ListHomes",
+			Handler:       _HomeService_ListHomes_Handler,
+			ServerStreams: true,
+		},
+	},
 	Metadata: "apps/grpc/protos/homepb/home.proto",
 }

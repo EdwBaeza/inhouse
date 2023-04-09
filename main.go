@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/edwbaeza/inhouse/apps/grpc/protos/homepb"
-	"github.com/edwbaeza/inhouse/apps/grpc/services"
+	"github.com/edwbaeza/inhouse/apps/grpc/server"
 	"github.com/edwbaeza/inhouse/src/infrastructure/repository"
 	"github.com/sirupsen/logrus"
 
@@ -24,7 +24,7 @@ func main() {
 
 	defer listener.Close()
 	repository := repository.NewHomeMemoryRepository()
-	homeService := services.NewHomeService(repository)
+	homeService := server.NewHomeServer(repository)
 	logrus.SetLevel(logrus.DebugLevel)
 	grpcServer := grpc.NewServer(
 		grpc.UnaryInterceptor(
