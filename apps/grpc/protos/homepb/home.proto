@@ -1,7 +1,6 @@
  syntax = "proto3";
 
  package homepb;
- import "google/protobuf/empty.proto";
 
  option go_package = "github.com/edwbaeza/inhouse;homepb";
 
@@ -19,8 +18,11 @@ message HomeResponse {
    string id = 1;
 }
 
+message Empty {}
+
 service HomeService {
    rpc GetHome (GetHomeRequest) returns (Home) {}
    rpc SaveHome (Home) returns (HomeResponse) {}
-   rpc ListHomes (google.protobuf.Empty) returns (stream Home) {}
+   rpc ListHomes (Empty) returns (stream Home) {}
+   rpc SaveHomes (stream Home) returns (stream HomeResponse) {}
 }
